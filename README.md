@@ -15,7 +15,7 @@ This repository contains implementations or usage of the following techniques an
 We make use of Pytorch with Pytorch Lightning for our implementations.
 
 ## Usage
-I have created a requirements file. I recommend using [pipenv](https://pypi.org/project/pipenv/) with Python 3.6 to open a shell and then using
+I have created a requirements file. I recommend using [pipenv](https://pypi.org/project/pipenv/) with Python 3.8 to open a shell and then using
 ~~~
 pipenv install -r requirements.txt
 ~~~
