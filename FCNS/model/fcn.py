@@ -3,9 +3,9 @@ from pytorch_lightning.metrics.functional import iou, dice_score
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from SSFCN.metrics.soft_dice_loss import DiceLoss as DiceLoss
-from SSFCN.model.utils.class_miou import calculate_class_miou
-from SSFCN.model.utils.tensorfy import tensorify
+from FCNS.metrics.soft_dice_loss import DiceLoss as DiceLoss
+from FCNS.model.utils.class_miou import calculate_class_miou
+from FCNS.model.utils.tensorfy import tensorify
 
 
 def conv1x1(in_channels, out_channels, groups=1):

@@ -5,13 +5,13 @@ from torch import nn
 from torch.autograd.variable import Variable
 import torch.nn.functional as F
 from itertools import permutations
+from sklearn.metrics import adjusted_rand_score as ari
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import adjusted_rand_score as ari
 from torch.nn import init
-from SSFCN.metrics.soft_dice_loss import DiceLoss as DiceLoss
-from SSFCN.model.utils.class_miou import calculate_class_miou
-from SSFCN.model.utils.tensorfy import tensorify
+from FCNS.metrics.soft_dice_loss import DiceLoss as DiceLoss
+from FCNS.model.utils.class_miou import calculate_class_miou
+from FCNS.model.utils.tensorfy import tensorify
 
 
 def make_one_hot(labels, C=2):
@@ -113,11 +113,10 @@ class DownConv(nn.Module):
     def __init__(self, in_channels, out_channels, dilation):
         super().__init__()
 
-        self.double_conv = DoubleConv(in_channels, out_channels, dilation)
+        self.double_conv = DoubleConv(in_channels, out_channels, dilation=dilation)
 
         self.down_conv = nn.Sequential(
-            # nn.Conv2d(out_channels, out_channels, kernel_size=2, stride=2),
-            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(out_channels, out_channels, kernel_size=2, stride=2),
             nn.PReLU(out_channels)
         )
 
@@ -131,46 +130,46 @@ class UpConv(nn.Module):
     def __init__(self, in_channels, out_channels, dilation):
         super().__init__()
 
-        # TODO: Clarify how many extra parameters translated skip requires since it is instantly downscaled?
         self.up_conv = nn.Sequential(
-            nn.ConvTranspose2d(4*in_channels, in_channels, kernel_size=2, stride=2),
+            nn.ConvTranspose2d(2*in_channels, in_channels, kernel_size=2, stride=2),
             nn.PReLU(in_channels)
         )
 
-        self.double_conv = DoubleConv(in_channels, out_channels, dilation)
+        self.double_conv = DoubleConv(in_channels, out_channels, dilation=dilation)
 
-    def forward(self, x, xskip, yskip, xyskip):
+    def forward(self, x, xskip):
         if x.shape != xskip.shape:
             x = F.pad(input=x, pad=(0, 1, 0, 1), mode='constant', value=0)
 
-        x = torch.cat((x, xskip, yskip, xyskip), dim=1)
+        x = torch.cat((x, xskip), dim=1)
         out = self.up_conv(x)
         out = self.double_conv(out)
         return out
 
 
-class TSCNet(pl.LightningModule):
+class BNet(pl.LightningModule):
     """"
 
     """
     def __init__(self, num_classes, in_channels=3, depth=5, start_filts=16, dilation=1):
-        super(TSCNet, self).__init__()
+        super(BNet, self).__init__()
 
         self.num_classes = num_classes
         self.in_channels = in_channels
         self.depth = depth
         self.start_filts = start_filts
-        self.dilation = dilation
 
         self.down_convs = []
         self.up_convs = []
 
         self.class_mious = torch.zeros(self.num_classes)
-        self.class_samples = torch.zeros(self.num_classes)
+        self.class_samples = 0
 
-        self.final_layer = nn.Conv2d(4*start_filts, num_classes, kernel_size=1)
+        self.final_layer = nn.Conv2d(2*start_filts, num_classes, kernel_size=1)
 
         self.sm = nn.LogSoftmax(dim=1)
+
+        self.dilation = dilation
 
         # Create Encoder
         ins = self.in_channels
@@ -203,9 +202,10 @@ class TSCNet(pl.LightningModule):
 
         # self.lo = nn.BCELoss(reduction="none")
         # self.loss = eff_perm_inv
-        # self.loss = nn.CrossEntropyLoss(weight=torch.tensor([0.95, 0.05]))
-        self.ce_loss = nn.CrossEntropyLoss()
+        # self.loss = nn.BCELoss()
+        # self.loss = nn.CrossEntropyLoss(weight=torch.tensor([0.62, 0.02, 0.27, 0.09]))
         self.dice_loss = DiceLoss()
+        self.ce_loss = nn.CrossEntropyLoss()
 
     @staticmethod
     def weight_init(m) -> None:
@@ -227,25 +227,13 @@ class TSCNet(pl.LightningModule):
         x = self.middle_conv(x)
         encoder_outs.append(x)
 
-        eo_x = []
-        eo_y = []
-        eo_xy = []
-
-        for i, e in enumerate(encoder_outs):
-            roll_x = (e.shape[3]//(self.depth+1))*(i+1)
-            roll_y = (e.shape[2]//(self.depth+1))*(i+1)
-
-            eo_x.append(torch.roll(e, roll_x, 3))
-            eo_y.append(torch.roll(e, roll_y, 2))
-            eo_xy.append(torch.roll(torch.roll(e, roll_x, 3), roll_y, 2))
-
-        # This is intended to have normal additive skip and translated skip (F(X)+X, X+, X-, X+-)
+        # This is intended to have normal additive skip and translated skip (F(X)+X, X+, X-)
         for i, module in enumerate(self.up_convs):
-            x = module(x+encoder_outs[-(i+1)], xskip=eo_x[-(i+1)], yskip=eo_y[-(i+1)], xyskip=eo_xy[-(i+1)])
+            x = module(x, xskip=encoder_outs[-(i+1)])
 
-        if x.shape != eo_x[0].shape:
+        if x.shape != encoder_outs[0].shape:
             x = F.pad(input=x, pad=(0, 1, 0, 1), mode='constant', value=0)
-        x = self.final_layer(torch.cat((x+encoder_outs[0], eo_x[0], eo_y[0], eo_xy[0]), dim=1))
+        x = self.final_layer(torch.cat((x, encoder_outs[0]), dim=1))
 
         if softmax:
             x = self.sm(x)
@@ -267,12 +255,12 @@ class TSCNet(pl.LightningModule):
 
         ce = self.ce_loss(output, y.squeeze(1))
         dice = self.dice_loss(sm_output, y)
-        total_loss = (ce + dice) / 2
+        total_loss = (ce+dice)/2
 
         miou = iou(torch.argmax(sm_output, dim=1), y, self.num_classes)
         dice_s = dice_score(sm_output, y.squeeze(1), bg=True)
 
-        self.log("Train MIoU", miou.item(), on_step=False, on_epoch=True, prog_bar=True)
+        self.log("Train MIoU", miou.item(), on_step=False, on_epoch=True, prog_bar=False)
         self.log("Train Dice Score", dice_s.item(), on_step=False, on_epoch=True, prog_bar=True)
         self.log("Train Loss", total_loss.item(), on_step=False, on_epoch=True, prog_bar=False)
 
@@ -286,7 +274,7 @@ class TSCNet(pl.LightningModule):
 
         ce = self.ce_loss(output, y.squeeze(1))
         dice = self.dice_loss(sm_output, y.squeeze(1))
-        loss = (ce + dice) / 2
+        loss = (ce+dice)/2
 
         miou = iou(torch.argmax(sm_output, dim=1), y, self.num_classes)
         dice_s = dice_score(sm_output, y.squeeze(1), bg=True)

@@ -1,5 +1,5 @@
-# from SSFCN.metrics.jensenshannon import jensen_shannon
-from SSFCN.metrics.mi_score import mi_score
+# from FCNS.metrics.jensenshannon import jensen_shannon
+from FCNS.metrics.mi_score import mi_score
 from torchvision import transforms
 from PIL import Image
 from torch.functional import F
@@ -31,7 +31,7 @@ class HyperParameters:
     """
     Directory and dataset management
     """
-    base = "/home/joshua/Desktop/Work/SSFCN"
+    base = "/home/joshua/Desktop/Work/FCNS"
 
     dataset_name = "shapes"
 

@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from SSFCN.model.BNet import BNet
+from FCNS.model.BNet import BNet
 from pytorch_lightning import Trainer
 from experiments.conf import HyperParameters as hp
 from experiments.dataset.pair import ImageSegmentation as DataSet
@@ -13,7 +13,7 @@ def run():
                    target_transform=hp.target_transform, concat_coords=True)
     val_data = DataSet(root_dir="/home/joshua/Desktop/Work/SSFCN/data/4_COCO/validation", transform=hp.train_transform,
                        target_transform=hp.target_transform, concat_coords=True)
-    # test_data = DataSet(root_dir="/home/joshua/Desktop/Work/SSFCN/data/top_square/test", transform=hp.train_transform,
+    # test_data = DataSet(root_dir="/home/joshua/Desktop/Work/FCNS/data/top_square/test", transform=hp.train_transform,
     #                     concat_coords=True)
     # split = int(len(data)*0.99)
     # train_data, val_data = torch.utils.data.random_split(data, [split, len(data)-split])

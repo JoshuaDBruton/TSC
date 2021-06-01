@@ -1,8 +1,8 @@
 import torch
 from torch.utils.data import DataLoader
-from SSFCN.model.TSCNet import TSCNet
-from SSFCN.model.BNet import BNet
-from SSFCN.model.mi_estimator import T, Mine
+from FCNS.model.TSCNet import TSCNet
+from FCNS.model.BNet import BNet
+from FCNS.model.mi_estimator import T, Mine
 from pytorch_lightning import Trainer
 from experiments.conf import HyperParameters as hp
 from experiments.conf import as_dict
@@ -75,7 +75,7 @@ def test_mi():
                    target_transform=hp.target_transform, concat_coords=True)
     val_data = DataSet(root_dir="/home/joshua/Desktop/Work/SSFCN/data/ircad/validation", transform=hp.train_transform,
                        target_transform=hp.target_transform, concat_coords=True)
-    # test_data = DataSet(root_dir="/home/joshua/Desktop/Work/SSFCN/data/top_square/test", transform=hp.train_transform,
+    # test_data = DataSet(root_dir="/home/joshua/Desktop/Work/FCNS/data/top_square/test", transform=hp.train_transform,
     #                     concat_coords=True)
     # split = int(len(data)*0.99)
     # train_data, val_data = torch.utils.data.random_split(data, [split, len(data)-split])
@@ -115,7 +115,7 @@ def test_mi():
     #         ax[1].imshow(output[j].detach().numpy())
     #         ax[2].imshow(y[j][0].detach().numpy())
     #         plt.show()
-            # res_path = "/home/joshua/Desktop/Work/SSFCN/experiments/results"
+            # res_path = "/home/joshua/Desktop/Work/FCNS/experiments/results"
             # z = hp.inv_normalize(x[j][:3, :, :]).permute(1, 2, 0).detach().numpy()
             # z[z>1] = 1
             # plt.imsave(res_path+"/inputs/"+str(2*i+j)+".png", z)
@@ -143,7 +143,7 @@ def visualise():
 
     model = TSCNet(4, use_onehot=False, in_channels=5, start_filts=16, depth=8)
 
-    model = model.load_from_checkpoint("/home/joshua/Desktop/Work/SSFCN/experiments/SSFCN-experiments/2re8r63l/checkpoints/epoch=64-step=422564.ckpt")
+    model = model.load_from_checkpoint("/home/joshua/Desktop/Work/FCNS/experiments/FCNS-experiments/2re8r63l/checkpoints/epoch=64-step=422564.ckpt")
 
     model.eval()
 
@@ -192,10 +192,10 @@ def transpose_test():
 
 
 def ds_to_npy():
-    idir = "/home/joshua/Desktop/Work/SSFCN/data/7_COCO/validation/inputs/"
-    tdir = "/home/joshua/Desktop/Work/SSFCN/data/7_COCO/validation/targets/"
+    idir = "/home/joshua/Desktop/Work/FCNS/data/7_COCO/validation/inputs/"
+    tdir = "/home/joshua/Desktop/Work/FCNS/data/7_COCO/validation/targets/"
 
-    fdir = "/home/joshua/Desktop/Work/SSFCN/data/4_COCO/validation/"
+    fdir = "/home/joshua/Desktop/Work/FCNS/data/4_COCO/validation/"
 
     curr = 0
     for filename in tqdm(os.listdir("/home/joshua/Desktop/Work/SSFCN/data/7_COCO/validation/inputs")):
@@ -238,7 +238,7 @@ def run_base_dia(dilation, name):
                    target_transform=hp.target_transform, concat_coords=True)
     val_data = DataSet(root_dir="/home/joshua/Desktop/Work/SSFCN/data/ircad/validation", transform=hp.train_transform,
                        target_transform=hp.target_transform, concat_coords=True)
-    # test_data = DataSet(root_dir="/home/joshua/Desktop/Work/SSFCN/data/top_square/test", transform=hp.train_transform,
+    # test_data = DataSet(root_dir="/home/joshua/Desktop/Work/FCNS/data/top_square/test", transform=hp.train_transform,
     #                     concat_coords=True)
     # split = int(len(data)*0.99)
     # train_data, val_data = torch.utils.data.random_split(data, [split, len(data)-split])

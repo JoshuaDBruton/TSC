@@ -58,6 +58,7 @@ class ImageSegmentation(Dataset):
             y = torch.as_tensor(np.array(y), dtype=torch.int64).unsqueeze(0)
             y = self.target_transform(y)
 
+        # Concatenating normalised (x,y) coordinate to each pixel, so network requires 2 extra channels (RGBXY)
         if self.concat_coords:
             gx, gy = torch.meshgrid(torch.arange(0, x.shape[1]), torch.arange(0, x.shape[2]))
             gx = gx/torch.max(gx)

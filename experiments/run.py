@@ -1,9 +1,9 @@
 from experiments.dataset.image_pair import ImageSegmentation as DataSet
 from torch.utils.data import DataLoader
 from pytorch_lightning.loggers import WandbLogger
-from SSFCN.model.BNet import BNet
-from SSFCN.model.TSCNet import TSCNet
-from SSFCN.model.fcn import UNet
+from FCNS.model.BNet import BNet
+from FCNS.model.TSCNet import TSCNet
+from FCNS.model.fcn import UNet
 from pytorch_lightning import Trainer
 import os
 from torchvision import transforms
@@ -83,7 +83,7 @@ def run(network, dataset_name, experiment_name, epochs, num_classes, depth, star
 
 
 if __name__ == "__main__":
-    # run(network="unet", dataset_name=conf.dataset_name, experiment_name=conf.experiment_prefix+"-unet", epochs=conf.epochs, num_classes=conf.num_classes, depth=conf.depth, start_filts=conf.start_filts, dilation=1)
+    run(network="unet", dataset_name=conf.dataset_name, experiment_name=conf.experiment_prefix+"-unet", epochs=conf.epochs, num_classes=conf.num_classes, depth=conf.depth, start_filts=conf.start_filts, dilation=1)
     # run(network="unet", dataset_name=conf.dataset_name, experiment_name=conf.experiment_prefix + "-unet-di2", epochs=conf.epochs, num_classes=conf.num_classes, depth=conf.depth, start_filts=conf.start_filts, dilation=2)
     # run(network="unet", dataset_name=conf.dataset_name, experiment_name=conf.experiment_prefix + "-unet-di3", epochs=conf.epochs, num_classes=conf.num_classes, depth=conf.depth, start_filts=conf.start_filts, dilation=3)
     # run(network="bnet", dataset_name=conf.dataset_name, experiment_name=conf.experiment_prefix+"-bnet", epochs=conf.epochs, num_classes=conf.num_classes, depth=conf.depth, start_filts=conf.start_filts, dilation=1)
