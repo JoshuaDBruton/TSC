@@ -10,6 +10,7 @@ Supervised by: Dr. Hairong Wang
 This repository contains implementations or usage of the following techniques and architectures:
 1. Implementations of UNet, BNet (an extension of VNet), and TSCNet
 2. Translated Skip Connections, used in the TSCNet architecture (marked with comment)
+3. Dice Loss
 
 We make use of Pytorch with Pytorch Lightning for our implementations.
 
