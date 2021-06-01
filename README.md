@@ -8,9 +8,8 @@ Supervised by: Dr. Hairong Wang
 
 ## Contents
 This repository contains implementations or usage of the following techniques and architectures:
-1. Fully Convolutional Neural Networks
-2. Translated Skip Connections
-3. VNet and UNet
+1. Implementations of UNet, BNet (an extension of VNet), and TSCNet
+2. Translated Skip Connections, used in the TSCNet architecture (marked with comment)
 
 We make use of Pytorch with Pytorch Lightning for our implementations.
 
@@ -19,7 +18,7 @@ I have created a requirements file. I recommend using [pipenv](https://pypi.org/
 ~~~
 pipenv install -r requirements.txt
 ~~~
-and requirements should be met.
+and requirements should be met. Of course, Conda, and any other environment manager you are familiar with will work as well.
 
 ## Future work
 This repository is licensed under the GNU General Public License and therefore is completely free to use for any project you see fit. If you do use or learn from our work, we would appreciate a citation, we will make the details available here after publication as this work is still in the review process.
