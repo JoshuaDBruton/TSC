@@ -7,6 +7,7 @@
 [![GitHub license](https://img.shields.io/github/license/JoshuaDBruton/TSC)](https://github.com/JoshuaDBruton/TSC/blob/main/LICENSE)
 
 </div>
+
 ## Overview
 Here we present a novel neural network module, called a Translated Skip Connection, that can exponentially increase the receptive fields of neural networks with minimal impact on other design decisions. This work was completed as a part of my MSc. in Computer Science at the University of the Witwatersrand.
 We have produced a paper for this work and are currently in the submission/review process with a journal. This README will be updated with details should the work pass review for publication.
