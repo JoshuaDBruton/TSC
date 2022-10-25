@@ -38,6 +38,7 @@ This repository is licensed under the GNU General Public License and therefore i
 If there are any pressing problems with the code please open an issue and I will attend to it as timeously as is possible.
 
 ## Citation
+If you use the work or code please cite our work:
 ~~~
 @inproceedings{bruton2022translated,
   title={Translated Skip Connections-Expanding the Receptive Fields of Fully Convolutional Neural Networks},
