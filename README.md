@@ -24,6 +24,8 @@ This repository contains implementations or usage of the following techniques an
 
 We make use of Pytorch with Pytorch Lightning for our implementations.
 
+You can find a more detailed description of point 2 (translated skip connections) [in our paper based on that technique](https://ieeexplore.ieee.org/document/9897165).
+
 ## Usage
 I have created a requirements file. I recommend using [pipenv](https://pypi.org/project/pipenv/) with Python 3.8 to open a shell and then using
 ~~~
