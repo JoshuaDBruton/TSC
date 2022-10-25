@@ -36,3 +36,15 @@ This repository is licensed under the GNU General Public License and therefore i
 
 ## Suggestions
 If there are any pressing problems with the code please open an issue and I will attend to it as timeously as is possible.
+
+## Citation
+~~~
+@inproceedings{bruton2022translated,
+  title={Translated Skip Connections-Expanding the Receptive Fields of Fully Convolutional Neural Networks},
+  author={Bruton, J and Wang, H},
+  booktitle={2022 IEEE International Conference on Image Processing (ICIP)},
+  pages={631--635},
+  year={2022},
+  organization={IEEE}
+}
+~~~
